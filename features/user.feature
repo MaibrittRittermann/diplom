@@ -1,37 +1,41 @@
 Feature: users
   Background:
-    Given I am administrator
-    And I am logged in
-    And I am in the 'User' dashboard
+    Given users exist:
+      | name          | email               | password          | type  |
+      | Ole           | olfs@skivecollege.dk| Diplom#Admin-2022 | admin |
+      | Kent          | kent@epassiona.com  | Diplom#2022       | user  |
+    Given Ole is administrator
+    And Ole is logged in
+    And Ole is in the 'User' dashboard
   Scenario: Create user
-    When I click on 'Create new'
-    Then I should see the Create user page
-    When I fill in the field 'first name'
-    And I fill in the field 'lastname'
-    And I fill in the field 'email'
-    And I fill in the field 'password'
-    And I fill in the field 'repeat password' with a matching password as in the first passwordfield
-    Then a user is created
+    When Ole click on 'Create new'
+    Then Ole should see the Create user page
+    When Ole fill in the field 'first name'
+    And Ole fill in the field 'lastname'
+    And Ole fill in the field 'email'
+    And Ole fill in the field 'password'
+    And Ole fill in matching password in the field 'repeat password'
+    Then new user Kent is created
   Scenario: Create user with non matching password in 'password field' and 'repeat password'
-    When I click on 'Create new'
-    Then I should see the Create user page
-    When I fill in the field 'first name'
-    And I fill in the field 'lastname'
-    And I fill in the field 'email'
-    And I fill in the field 'password'
-    And I fill in the field 'repeat password' with another password than entered in the first password field
-    Then I should be informed to adjust passwords, so they match
+    When Ole click on 'Create new'
+    Then Ole should see the Create user page
+    When Ole fill in the field 'first name'
+    And Ole fill in the field 'lastname'
+    And Ole fill in the field 'email'
+    And Ole fill in the field 'password'
+    And Ole fill in non matching entry in field 'repeat password'
+    Then Ole should be informed to adjust passwords, so they match
   Scenario: Create user with invalid email
-    When I click on 'Create new'
-    Then I should see the Create user page
-    When I fill in the field 'first name'
-    And I fill in the field 'lastname'
-    And I fill in the field 'email' with an invalid email
+    When Ole click on 'Create new'
+    Then Ole should see the Create user page
+    When Ole fill in the field 'first name'
+    And Ole fill in the field 'lastname'
+    And Ole fill in the field 'email' with an invalid email
     Then a pop up should inform that email is invalid
-  Scenario: Delete user
-    When I have selected a user in the system
-    And I click on 'Delete user'
-    Then the user should be deleted
+  Scenario: Delete Kent
+    When Ole have selected user Kent
+    And Ole click on 'Delete'
+    Then the user Kent should be deleted
   Scenario: Delete last user (the last administrator) fail
-    When I try to delete the last administrator (my self)
+    When Ole try to delete Ole
     Then the system should reject and inform 'Deletion fail because you are the last administrator on the system'

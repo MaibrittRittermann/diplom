@@ -1,6 +1,6 @@
 const { When, Then } = require('@cucumber/cucumber'); 
 
-    When('I choose download photo', function () {
+    When('{user} choose download photo', function (user) {
     // Write code here that turns the phrase above into concrete actions
     return 'pending';
     });
@@ -15,7 +15,7 @@ const { When, Then } = require('@cucumber/cucumber');
     return 'pending';
     });
 
-    When('I {string} {string} button', function (string, string2) {
+    When('{user} {string} {string} button', function (user, string, string2) {
     // Write code here that turns the phrase above into concrete actions
     return 'pending';
     });

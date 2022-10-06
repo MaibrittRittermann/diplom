@@ -1,56 +1,29 @@
-const {Given, When, Then} = require('@cucumber/cucumber'); 
+const { When, Then } = require('@cucumber/cucumber'); 
 
-    Given('I am a registered user', function () {
-        // Write code here that turns the phrase above into concrete actions
+    When('When {user} attach Corrupt photo(s)', function (user) {
         return 'pending';
     });
 
-    Given('I am on the {string} page', function (string) {
-        // Write code here that turns the phrase above into concrete actions
+    Then('{user} should see an error {string}', function (user, string) {
         return 'pending';
     });
 
-    When('When I attach Corrupt photos', function () {
-        // Write code here that turns the phrase above into concrete actions
+    When('{user} attach photos', function (user) {
         return 'pending';
     });
 
-    When('Press the upload button', function () {
-        // Write code here that turns the phrase above into concrete actions
+    Then('the photo(s) is/are uploaded', function () {
         return 'pending';
     });
 
-    Then('I shoul see an error {string}', function (string) {
-        // Write code here that turns the phrase above into concrete actions
+    Then('the photo(s) is/are classified', function () {
         return 'pending';
     });
 
-    When('I attach photos', function () {
-    // Write code here that turns the phrase above into concrete actions
-    return 'pending';
+    When('the photo(s) is/are not recognised', function () {
+        return 'pending';
     });
 
-    Then('the photos are uploaded', function () {
-    // Write code here that turns the phrase above into concrete actions
-    return 'pending';
-    });
-
-    Then('the photos are classified', function () {
-    // Write code here that turns the phrase above into concrete actions
-    return 'pending';
-    });
-
-    When('the photos are not recognised', function () {
-    // Write code here that turns the phrase above into concrete actions
-    return 'pending';
-    });
-
-    Then('I am asked for information about photos', function () {
-    // Write code here that turns the phrase above into concrete actions
-    return 'pending';
-    });
-
-    When('I submit', function () {
-    // Write code here that turns the phrase above into concrete actions
-    return 'pending';
+    Then('{user} is asked for information about photo(s)', function () {
+        return 'pending';
     });
