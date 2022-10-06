@@ -1,9 +1,8 @@
 const {Given, When, Then} = require('@cucumber/cucumber'); 
-const user = require("../../src/model/User");
+const User = require("../../src/model/User");
 
     Given('{user} is administrator', function (user) {
-        this.user = user;
-        return user.isAdmin === true;
+        return user.isAdmin;
     });
 
     Given('{user} is in the {string} dashboard', function (user, string) {
@@ -15,7 +14,7 @@ const user = require("../../src/model/User");
     });
 
     When('{user} fill in the field {string}', function (user, string) {
-        return 'pending';
+        return string.length > 0;
     });
 
     When('{user} fill in matching password in the field {string}', function (user, string) {
@@ -23,6 +22,7 @@ const user = require("../../src/model/User");
     });
 
     Then('new user {user} is created', function (user) {
+        // Check database for new user
         return 'pending';
     });
 

@@ -19,5 +19,11 @@
   "devDependencies": {
     "@cucumber/cucumber": "^8.6.0",
     "hamjest": "^3.7.3"
+  },
+  "dependencies": {
+    "config": "^3.3.8",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "mongoose": "^6.6.5"
   }
 }
