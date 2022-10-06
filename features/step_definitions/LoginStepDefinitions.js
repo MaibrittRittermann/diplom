@@ -1,4 +1,4 @@
-const User = require("../../src/model/User");
+const User = require("../../model/User");
 const {Given, When, Then} = require('@cucumber/cucumber'); 
 const {assertThat, is} = require('hamjest');
 

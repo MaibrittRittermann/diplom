@@ -1,4 +1,4 @@
-const User = require('../../src/model/User');
+const User = require('../../model/User');
 const {defineParameterType} = require('@cucumber/cucumber');
 
 defineParameterType({

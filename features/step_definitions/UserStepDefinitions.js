@@ -1,5 +1,5 @@
 const {Given, When, Then} = require('@cucumber/cucumber'); 
-const User = require("../../src/model/User");
+const User = require("../../model/User");
 
     Given('{user} is administrator', function (user) {
         return user.isAdmin;

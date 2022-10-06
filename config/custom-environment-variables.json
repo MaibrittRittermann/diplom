@@ -1,0 +1,4 @@
+{
+    "jwtPrivateKey" : "Diplom_jwtPrivateKey",
+    "connectionString" : "connectionString"
+}
