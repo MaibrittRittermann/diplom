@@ -21,6 +21,7 @@
     "hamjest": "^3.7.3"
   },
   "dependencies": {
+    "@google-cloud/aiplatform": "^2.3.0",
     "bcrypt": "^5.0.1",
     "config": "^3.3.8",
     "dotenv": "^16.0.3",

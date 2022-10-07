@@ -1,9 +1,15 @@
 const User = require("../../model/User");
-const {Given, When, Then} = require('@cucumber/cucumber'); 
+const {Given, When, Then, Before} = require('@cucumber/cucumber'); 
 const {assertThat, is} = require('hamjest');
 
+    Before(function() {
+        this.users = [];
+    });
+
     Given('users exist:', function (dataTable) {
-        this.tom = new User(dataTable, "tom@epassiona.com", "Diplom#2022");
+        dataTable.hashes().map((user) => {
+            this.users[user.name] = new User(user.name, user.email, user.password, user.isAdmin);
+        });
     });
 
     Given('{user} is a registered user', function (user) {

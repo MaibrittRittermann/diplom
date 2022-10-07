@@ -10,6 +10,8 @@ Feature: Login
     When press 'enter'
     Then field 'email' should be with error
     And field 'password' should be with error
+Rule: Maximum length of email 255 characters
+Rule: Maximum length of password 255 characters
   Scenario: Wrong password
     When Tom type 'tom@epassiona.com' in 'email'
     And Tom type '123456-ABC' in 'password'

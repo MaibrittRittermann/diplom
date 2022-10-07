@@ -1,5 +1,10 @@
-const {Given, When, Then} = require('@cucumber/cucumber'); 
+const {Given, When, Then, Before} = require('@cucumber/cucumber'); 
 const User = require("../../model/User");
+const {assertThat, is} = require('hamjest');
+
+    Before(function() {
+        // Setup general tasks
+    });
 
     Given('{user} is administrator', function (user) {
         return user.isAdmin;
@@ -54,6 +59,6 @@ const User = require("../../model/User");
         return 'pending';
     });
 
-    Then('the system should reject and inform {string}', function (string) {
-        return 'pending';
+    Then('the system should reject and inform {string}', function (extectedMessage) {
+        assertThat(extectedMessage, is('Deletion fail because you are the last administrator on the system'));
     });

@@ -3,6 +3,9 @@ Feature: Upload Photos
     Given Tom is a registered user
     And Tom is logged in
     And Tom is on the 'Upload' page
+
+Rule: Maximum image size 1.5M
+
   Scenario: Corrupt files or wrong format
     When When Tom attach Corrupt photos
     And Tom click on 'upload'
