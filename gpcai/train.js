@@ -13,11 +13,11 @@ function main(
    * (Not necessary if passing values as arguments)
    */
   
-  const datasetId = 'DATASET ID';
-  const modelDisplayName = 'NEW MODEL NAME';
-  const trainingPipelineDisplayName = 'NAME FOR TRAINING PIPELINE';
-  const project = 'YOUR PROJECT ID';
-  const location = 'us-central1';
+  const datasetId = 'DATASET_ID';
+  const modelDisplayName = 'MODEL_NAME';
+  const trainingPipelineDisplayName = 'TRAINING_PIPELINE';
+  const project = 'PROJECT_ID';
+  const location = 'LOCATION';
 
   // Imports the Google Cloud Pipeline Service Client library
   const aiplatform = require('@google-cloud/aiplatform');

@@ -1,4 +1,9 @@
 {
     "jwtPrivateKey" : "Diplom_jwtPrivateKey",
-    "connectionString" : "connectionString"
+    "connectionString" : "connectionString",
+    "GPC_ENDPOINT_ID":"GPC_ENDPOINT_ID",
+    "GPC_DATASET_ID":  "GPC_DATASET_ID",
+    "GPC_MODEL_NAME":"GPC_MODEL_NAME",
+    "GPC_PROJECT_ID":"GPC_PROJECT_ID",
+    "GPC_LOCATION":"GPC_LOCATION"
 }

@@ -10,11 +10,13 @@ Rule: Maximum image size 1.5M
     When When Tom attach Corrupt photos
     And Tom click on 'upload'
     Then Tom should see an error 'Fejl'
+
   Scenario: Photo content is recognised
     When Tom attach photos
     And Tom click on 'upload'
     Then the photos are uploaded
     And the photos are classified
+    
   Scenario: Photo content is not recognised
     When Tom attach photos
     And Tom click on 'upload'

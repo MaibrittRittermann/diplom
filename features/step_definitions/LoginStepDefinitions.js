@@ -1,4 +1,4 @@
-const User = require("../../model/User");
+const { User } = require("../../model/User");
 const {Given, When, Then, Before} = require('@cucumber/cucumber'); 
 const {assertThat, is} = require('hamjest');
 
@@ -8,7 +8,11 @@ const {assertThat, is} = require('hamjest');
 
     Given('users exist:', function (dataTable) {
         dataTable.hashes().map((user) => {
-            this.users[user.name] = new User(user.name, user.email, user.password, user.isAdmin);
+            this.users[user.name] = new User({
+                name : user.name, 
+                email : user.email, 
+                password : user.password, 
+                isAdmin : user.isAdmin});
         });
     });
 

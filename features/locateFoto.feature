@@ -5,15 +5,18 @@ Feature: Locate Fotos
       | Tom           | tom@epassiona.com | Diplom#2022   | user  |
     Given Tom is logged in
     And Tom is on the SearchPhotos page
+
   Scenario: No entries exist on subject
     When Tom enter an invalidtext searchstring 
     And press 'enter'
     Then Tom should see invaligtext not found
+
   Scenario: Entries found
     When Tom enter 'Mette Frederiksen'
     And press 'enter'
     Then Tom should see 'Results for Mette Frederiksen'
     And Photos of 'Mette Frederiksen'
+    
   Scenario: Use photo
     When Tom choose download photo
     Then Tom should see 'Download screen'

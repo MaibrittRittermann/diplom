@@ -13,17 +13,27 @@ router.get('/', [auth, admin], async(req, res) => {
 
 router.get('/:id', [auth, admin, validateObjectId], async (req, res) => {
     const user = await User.findById(req.params.id);
-    if(!user) return res.status(404).send("Den søgte bruger eksisterer ikke");
+    if(!user) return res.status(404).send("Den angivne bruger eksisterer ikke");
     res.send(user);
 });
 
+router.get('/email/:email', [auth, admin, validateObjectId], async (req, res) => {
+    const {error} = validate(req.body);
+    // file deepcode ignore XSS: Validated through Joi
+    if(error) return res.status(400).send(error.details[0].message);
+    const user = await User.findOne({email: req.params.email});
+    if(!user) return res.status(404).send("Den angivne email er ikke oprettet");
+    res.send(user);
+});
+
+// TODO : Add authentication and admin middleware
 router.post('/', async(req, res) => {
     const {error} = validate(req.body);
     // file deepcode ignore XSS: Validated through Joi
     if(error) return res.status(400).send(error.details[0].message);
 
     let user = await User.findOne({email: req.body.email});
-    if(user) return res.status(400).send('User allready registered');
+    if(user) return res.status(400).send(`Bruger ${user.name} er allerede oprettet`);
 
     const salt = await bcrypt.genSalt(10);
     const pwd = await bcrypt.hash(req.body.password, salt);
@@ -41,12 +51,7 @@ router.post('/', async(req, res) => {
         res
             .header('x-auth-token', token)
             .header("access-control-expose-headers", "x-auth-token")
-            .send({
-                name: req.body.name,
-                email: req.body.email,
-                password: pwd,
-                isAdmin: req.body.isAdmin
-            });
+            .send(`Bruger ${req.body.name} er oprettet`);
     } catch (e) {
         console.log(e.message);
     }
@@ -67,7 +72,7 @@ router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
         isAdmin: req.body.isAdmin
     }, {new : true});
 
-    if(!user) return res.status(404).send('The user with the given ID does not exist');
+    if(!user) return res.status(404).send('Den angivne bruger eksisterer ikke');
 
     res.send(user);
 });
@@ -76,7 +81,13 @@ router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
 
     const user = await User.findByIdAndDelete(req.params.id);
     
-    if(!user) return res.status(404).send('The user with the given ID does not exist');
+    if(!user) return res.status(404).send('Den angivne bruger eksisterer ikke');
+
+    if(user.isAdmin) {
+        // Todo: implement
+        let admins = await User.countDocuments({isAdmin:true});
+        if (admins > 1) return res.status(404).send("Fejl - kan ikke slette den sidste administrator");
+    }
 
     res.send(user);
 });
