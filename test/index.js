@@ -28,7 +28,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(helmet());
-require('./startup/routes')(app);
+require('../startup/routes')(app);
 
 // Load the API routes from the routes file
 // routes.load(app, controller);
