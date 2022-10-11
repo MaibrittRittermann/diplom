@@ -1,29 +1,36 @@
 const { When, Then } = require('@cucumber/cucumber'); 
 
-    When('When {user} attach Corrupt photo(s)', function (user) {
-        return 'pending';
-    });
+When('{user} try to upload photos', function (user) {
+    // Write code here that turns the phrase above into concrete actions
+    return 'pending';
+  });
 
-    Then('{user} should see an error {string}', function (user, string) {
-        return 'pending';
-    });
+  When('When {user} try to upload a Corrupt photos', function (user) {
+    // Write code here that turns the phrase above into concrete actions
+    return 'pending';
+  });
 
-    When('{user} attach photos', function (user) {
-        return 'pending';
-    });
+  Then('the photos are uploaded', function () {
+    // Write code here that turns the phrase above into concrete actions
+    return 'pending';
+  });
 
-    Then('the photo(s) is/are uploaded', function () {
-        return 'pending';
-    });
+  When('the photos are not recognised', function () {
+    // Write code here that turns the phrase above into concrete actions
+    return 'pending';
+  });
 
-    Then('the photo(s) is/are classified', function () {
-        return 'pending';
-    });
+  Then('{user} is asked for information about photos', function (user) {
+    // Write code here that turns the phrase above into concrete actions
+    return 'pending';
+  });
 
-    When('the photo(s) is/are not recognised', function () {
-        return 'pending';
-    });
+  When('{user} fills in metadata', function (user) {
+    // Write code here that turns the phrase above into concrete actions
+    return 'pending';
+  });
 
-    Then('{user} is asked for information about photo(s)', function () {
-        return 'pending';
-    });
+  Then('the photos are classified', function () {
+    // Write code here that turns the phrase above into concrete actions
+    return 'pending';
+  });

@@ -1,53 +1,43 @@
 const {Given, When, Then, Before} = require('@cucumber/cucumber'); 
-const User = require("../../model/User");
+const {User} = require("../../model/User");
 const {assertThat, is} = require('hamjest');
 
     Before(function() {
-        // Setup general tasks
+        this.users = [];
+    });
+
+    Given('Users exist:', function async (dataTable) {
+        dataTable.hashes().map((user) => {
+            this.users[user.name] = new User({
+                name : user.name, 
+                email : user.email, 
+                password : user.password, 
+                isAdmin : user.isAdmin});
+        });
+
+       
     });
 
     Given('{user} is administrator', function (user) {
         return user.isAdmin;
     });
 
-    Given('{user} is in the {string} dashboard', function (user, string) {
-        return 'pending';
+    When('{user} creates new user', function (user, dataTable) {
+        dataTable.hashes().map((user) => {
+            this.users[user.name] = new User({
+              name : user.name, 
+              email : user.email, 
+              password : user.password, 
+              isAdmin : user.isAdmin});
+          });
+      });
+
+    Then('new user with email {string} is created', function (string) {
+        // let usr = User.find({email: email});
+        assertThat(user.email, is(string));
     });
 
-    Then('{user} should see the Create user page', function (user) {
-        return 'pending';
-    });
-
-    When('{user} fill in the field {string}', function (user, string) {
-        return string.length > 0;
-    });
-
-    When('{user} fill in matching password in the field {string}', function (user, string) {
-        return 'pending';
-    });
-
-    Then('new user {user} is created', function (user) {
-        // Check database for new user
-        return 'pending';
-    });
-
-    When('{user} fill in non matching entry in field {string}', function (user, string) {
-        return 'pending';
-    });
-
-    Then('{user} should be informed to adjust passwords, so they match', function (user) {
-        return 'pending';
-    });
- 
-    When('{user} fill in the field {string} with an invalid email', function (user, string) {
-        return 'pending';
-    });
-
-    Then('a pop up should inform that email is invalid', function () {
-        return 'pending';
-    });
-
-    When('{user} have selected user {user}', function (user, user2) {
+    Then('{user} recieves message {string}', function () {
         return 'pending';
     });
 
@@ -55,7 +45,7 @@ const {assertThat, is} = require('hamjest');
         return 'pending';
     });
 
-    When('{user} try to delete {user}', function (user, user2) {
+    When('{user} deletes user {user}', function (user, user2) {
         return 'pending';
     });
 

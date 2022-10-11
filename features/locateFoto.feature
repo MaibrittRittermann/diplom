@@ -1,27 +1,21 @@
-Feature: Locate Fotos
+Feature: Locate Photos
   Background:
-    Given users exist:
+    Given Users exist:
       | name          | email             | password      | type  |
       | Tom           | tom@epassiona.com | Diplom#2022   | user  |
     Given Tom is logged in
-    And Tom is on the SearchPhotos page
 
-  Scenario: No entries exist on subject
-    When Tom enter an invalidtext searchstring 
-    And press 'enter'
-    Then Tom should see invaligtext not found
+  Scenario: No Photo metadata exist on search subject
+    When Tom search for photos with searchstring 'noSubject' 
+    Then Tom recieves message 'noSubject findes ikke i vores database'
 
-  Scenario: Entries found
-    When Tom enter 'Mette Frederiksen'
-    And press 'enter'
-    Then Tom should see 'Results for Mette Frederiksen'
-    And Photos of 'Mette Frederiksen'
+  Scenario: Photo metadata found on subject
+    When Tom search for 'Mette Frederiksen'
+    Then Tom sees Photos of 'Mette Frederiksen'
     
-  Scenario: Use photo
-    When Tom choose download photo
-    Then Tom should see 'Download screen'
-    When Tom enter 'useFor'
-    And choose 'useDate'
-    Then 'Download' button is active
-    When Tom 'click' 'Download' button
-    Then Photo should download
+    
+  Scenario: Use photo for production
+    When Tom chooses to download selected photo
+    And Tom enter 'useFor' and choose 'useDate'
+    Then Photo is downloaded
+    And Message is sent to ERP

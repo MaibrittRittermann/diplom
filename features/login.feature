@@ -1,27 +1,17 @@
 Feature: Login
   Background:
-    Given users exist:
+    Given Users exist:
       | name          | email             | password      | type  |
       | Tom           | tom@epassiona.com | Diplom#2022   | user  |
-    Given Tom is on the '/login' page
-    And the field 'email' is empty
-    And the field 'password' is empty
 
-  Scenario: Error on empty fields
-    When press 'enter'
-    Then field 'email' should be with error
-    And field 'password' should be with error
+  Scenario: Try to login with empty email and password fields
+    When Tom tries to submut an empty loginform
+    Then Tom recieves message '"email" is not allowed to be empty'
 
-Rule: Maximum length of email 255 characters
-Rule: Maximum length of password 255 characters
-  Scenario: Wrong password
-    When Tom type 'tom@epassiona.com' in 'email'
-    And Tom type '123456-ABC' in 'password'
-    And press 'enter'
-    Then Tom should see 'E-mail or password is incorrect'
+  Scenario: Try to login with wrong password
+    When Tom tries to login with credentials 'tom@epassiona.com' and 'hemmelig'
+    Then Tom recieves message 'Ugyldig email eller adgangskode'
     
   Scenario: Login successfully
-    When Tom type 'tom@epassiona.com' in 'email'
-    And Tom type 'Diplom#2022' in 'password'
-    And press 'enter'
-    Then Tom should see 'Access your account'
+    When Tom tries to login with credentials 'tom@epassiona.com' and 'Diplom#2022'
+    Then Tom is logged in
