@@ -1,4 +1,0 @@
-{
-    "jwtPrivateKey": "1111",
-    "db": "mongodb://localhost/diplom-test"
-  }
