@@ -60,10 +60,6 @@ web_modules/
 # Optional stylelint cache
 .stylelintcache
 
-# MRI
-
-test.json
-
 # Microbundle cache
 .rpt2_cache/
 .rts2_cache_cjs/
