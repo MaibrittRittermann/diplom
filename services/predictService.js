@@ -1,8 +1,8 @@
 const config = require('config');
 const aiplatform = require('@google-cloud/aiplatform');
-const endpointId = config.get("GPC_ENDPOINT_ID");
-const project = config.get('GPC_PROJECT_ID');
-const location = config.get('GPC_LOCATION');
+const endpointId = config.get("GCP_ENDPOINT_ID");
+const project = config.get('GCP_PROJECT_ID');
+const location = config.get('GCP_LOCATION');
 
 module.exports = async function (filename) {
     // [START aiplatform_predict_image_classification_sample]

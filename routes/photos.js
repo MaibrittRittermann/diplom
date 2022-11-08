@@ -29,10 +29,10 @@ router.get('/', auth,  async(req, res) => {
 
 router.get('/label/:label', async(req, res) => {
     console.log(`Find billeder om ${req.params.label}`);
-    const selection = await Photo.find({labels: req.params.label});
+    const selection = await Photo.find({labels:   { $regex : new RegExp(req.params.label, "i") }});
     // const urls = [];
     // selection.forEach(async (file) => {
-    //     // urls.push(await generateSignedUrl(file.name));
+    //     urls.push(await generateSignedUrl(file.name));
     // })
     res.send(selection);
 });

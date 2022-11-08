@@ -10,6 +10,12 @@ const gc = new Storage({
 })
 
 const upload  = (file) => new Promise((resolve, reject) => {
+
+// TODO: predictService()
+
+// TODO: If no predictions do trainModelService()
+
+
     const { originalname, buffer}= file;
     const blob = gc.bucket(bucketName).file(originalname.replace(/ /g, "_"));
     const blobStream = blob.createWriteStream({resumable: false});
