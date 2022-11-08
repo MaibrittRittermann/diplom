@@ -11,11 +11,6 @@ const config = require('config');
 const project = config.get('GPC_PROJECT_ID');
 const apiKey = config.get('GOOGLE_APPLICATION_CREDENTIALS');
 const bucketName = config.get('GOOGLE_BUCKET_NAME')
-// const CANONICAL_QUERY_STRING = `X-Goog-Algorithm: GOOG4-RSA-SHA256&X-Goog-Credential=1014748497178@cloudservices.gserviceaccount.com&X-Goog-Date=${(new Date()).toISOString()}&X-Goog
-// -expires=36000&X-Goog-Signedheaders=host&X-Goog-Signature=`
-
-
-// example%40example-project.iam.gserviceaccount.com%2F20181026%2Fus%2Fstorage%2Fgoog4_request
 
 const gc = new Storage({
     keyFilename: apiKey,
@@ -35,16 +30,11 @@ router.get('/', auth,  async(req, res) => {
 router.get('/label/:label', async(req, res) => {
     console.log(`Find billeder om ${req.params.label}`);
     const selection = await Photo.find({labels: req.params.label});
-    const urls = [];
-    // console.log(selection);
-    selection.forEach(async (file) => {
-        urls.push(await generateSignedUrl(file.name));
-    })
-    
-    console.log("URL = " + urls);
-    // res.send(selection.map(x => x.url));
-    res.send(urls);
-   
+    // const urls = [];
+    // selection.forEach(async (file) => {
+    //     // urls.push(await generateSignedUrl(file.name));
+    // })
+    res.send(selection);
 });
 
 router.get('/:image', auth, async(req, res) => {    
@@ -65,7 +55,5 @@ router.post('/', auth, async(req, res) => {
         console.log(ex);
     }
 });
-
-
 
 module.exports = router;

@@ -2,7 +2,7 @@ const { Storage } = require('@google-cloud/storage');
 const config = require('config');
 const project = config.get('GPC_PROJECT_ID');
 const apiKey = config.get('GOOGLE_APPLICATION_CREDENTIALS');
-const bucketName = config.get('GOOGLE_BUCKET_NAME')
+const bucketName = config.get('GOOGLE_BUCKET_NAME');
 
 const gc = new Storage({
     keyFilename: apiKey,
@@ -19,14 +19,19 @@ async function generateSignedUrl(fileName) {
     };
 console.log("Sign url for " + fileName);
     // Get a v4 signed URL for the file
-    const [url] = await gc
+    try {
+
+      const [url] = await gc
       .bucket(bucketName)
       .file(fileName)
       .getSignedUrl(options);
-
-    console.log(`The signed url for ${fileName} is ${url}.`);
-
-    return url;
+      
+      console.log(`The signed url for ${fileName} is ${url}.`);
+      
+      return url;
+    } catch(ex) {
+      console.log(ex);
+    }
   }
 
   module.exports.generateSignedUrl = generateSignedUrl;

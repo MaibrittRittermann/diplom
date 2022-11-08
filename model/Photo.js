@@ -14,10 +14,19 @@ const photoSchema = mongoose.Schema({
         maxLength: 255,
         unique: true
     },
+    photographer: {
+        type: String,
+        required: true,
+        minLength: 5,
+        maxLength: 255
+    },
+    photographerId: {
+        type: Number,
+        required: true,
+    },
     labels: {
         type: [String]
     },
-    
 });
 
 const Photo = mongoose.model('Photos', photoSchema);
