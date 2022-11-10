@@ -1,8 +1,8 @@
 const { Storage } = require('@google-cloud/storage');
 const config = require('config');
-const project = config.get('GPC_PROJECT_ID');
-const apiKey = config.get('GOOGLE_APPLICATION_CREDENTIALS');
-const bucketName = config.get('GOOGLE_BUCKET_NAME');
+const project = config.get('GCP_PROJECT_ID');
+const apiKey = config.get('GCP_APPLICATION_CREDENTIALS');
+const bucketName = config.get('GCP_BUCKET_NAME');
 
 const gc = new Storage({
     keyFilename: apiKey,

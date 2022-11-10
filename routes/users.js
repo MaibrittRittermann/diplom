@@ -42,6 +42,7 @@ router.post('/', async(req, res) => {
         name: req.body.name,
         email: req.body.email,
         password: pwd,
+        photographerId: req.body.photographerId,
         isAdmin: req.body.isAdmin
     });
         
@@ -69,6 +70,7 @@ router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         password: password,
+        photographerId: req.body.photographerId,
         isAdmin: req.body.isAdmin
     }, {new : true});
 

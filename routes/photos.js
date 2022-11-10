@@ -8,9 +8,9 @@ const { Storage } = require('@google-cloud/storage');
 const { Photo } = require('../model/Photo');
 const { generateSignedUrl } = require('../services/signedUrlService');
 const config = require('config');
-const project = config.get('GPC_PROJECT_ID');
-const apiKey = config.get('GOOGLE_APPLICATION_CREDENTIALS');
-const bucketName = config.get('GOOGLE_BUCKET_NAME')
+const project = config.get('GCP_PROJECT_ID');
+const apiKey = config.get('GCP_APPLICATION_CREDENTIALS');
+const bucketName = config.get('GCP_BUCKET_NAME')
 
 const gc = new Storage({
     keyFilename: apiKey,
@@ -28,7 +28,6 @@ router.get('/', auth,  async(req, res) => {
 });
 
 router.get('/label/:label', async(req, res) => {
-    console.log(`Find billeder om ${req.params.label}`);
     const selection = await Photo.find({labels:   { $regex : new RegExp(req.params.label, "i") }});
     // const urls = [];
     // selection.forEach(async (file) => {
@@ -45,8 +44,10 @@ router.get('/:image', auth, async(req, res) => {
 
 router.post('/', auth, async(req, res) => {
     try {
-        const image = req.file;
-        const imageUrl = await upload(image);
+        // TODO: multiple files - min 10 for training
+        const images = req.file;
+        await upload(images);
+
         res.json({
             message: `Billedet er overført`,
             url: imageUrl
