@@ -32,13 +32,12 @@ module.exports = async function (filename) {
       });
       const parameters = parametersObj.toValue();
   
-      //const fs = require('fs');
       const image = await fetch(filename)
         .then((response) => response.blob())
         .then(imageBlob => {
           console.log("ImageBlob" + filename);
           return URL.createObjectURL(imageBlob);
-        });//fs.readFileSync(filename, 'base64');
+        });
       const instanceObj = new instance.ImageClassificationPredictionInstance({
         content: image,
       });

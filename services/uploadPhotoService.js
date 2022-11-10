@@ -9,36 +9,18 @@ const gc = new Storage({
     projectId: project
 })
 
-const upload  = (files) => new Promise((resolve, reject) => {
-
-    let fileNames = [];
-
-    for( let file of files) {
-        const { originalname, buffer}= file;
-        const fileName = originalname.replace(/ /g, "_");
-        fileNames.push(fileName);
-        const blob = gc.bucket(bucketName).file(fileName);
-        const blobStream = blob.createWriteStream({resumable: false});
-        blobStream.on('finish', () => {
-            const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
-            resolve(publicUrl);
-        }).on('error', () => {
-            reject(`Kunne ikke uploade billede`)
-        }).end(buffer);
-    }
-
-    // TODO: predictService()
-
-// TODO: If no predictions do trainModelService()
-
-// const prediction = await predict(imageURL);
-// console.log(prediction);        
-//         if(!prediction) { // return res.status(404).send("Ingen forudsigelser om billedet");
-            // trainModel
-        // }
-        // "Predictions" : forudsigelser
-
-        //TODO: save labels and filenames in DB
+const upload  = (file) => new Promise((resolve, reject) => {
+console.log(file);
+    const { name, buffer}= file;
+console.log("name: " + name);
+    const blob = gc.bucket(bucketName).file(name.replace(/ /g, "_"));
+    const blobStream = blob.createWriteStream({resumable: false});
+    blobStream.on('finish', () => {
+        const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+        resolve(publicUrl);
+    }).on('error', () => {
+        reject(`Kunne ikke uploade billede`)
+    }).end(buffer);
 });
 
 module.exports.upload = upload;

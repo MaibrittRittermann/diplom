@@ -29,6 +29,8 @@ router.get('/', auth,  async(req, res) => {
 
 router.get('/label/:label', async(req, res) => {
     const selection = await Photo.find({labels:   { $regex : new RegExp(req.params.label, "i") }});
+// TODO: Get Signed URL or stream images instead
+
     // const urls = [];
     // selection.forEach(async (file) => {
     //     urls.push(await generateSignedUrl(file.name));
@@ -44,13 +46,32 @@ router.get('/:image', auth, async(req, res) => {
 
 router.post('/', auth, async(req, res) => {
     try {
-        // TODO: multiple files - min 10 for training
-        const images = req.file;
-        await upload(images);
+        const images = req.body.files;
+    console.log(images); // Empty object
+        let unPredicted = [];
 
+        for( let image of images) {
+console.log(image);            
+            await upload(image);
+
+            const prediction = await predict(blobStream.publicUrl);
+            console.log(prediction);        
+            if(!prediction)
+                unPredicted.push(fileName);
+            else {
+                let photo = new Photo({
+                    name: image.name,
+                    url: blobStream.publicUrl,
+                    photographer: req.body.photographer,
+                    photographerId: req.body.photographerId,
+                    labels: prediction
+                });
+                photo.save();
+            }
+        }
         res.json({
-            message: `Billedet er overført`,
-            url: imageUrl
+            uploaded: images,
+            nonLabeled: unPredicted
         });
     }catch(ex) {
         console.log(ex);
