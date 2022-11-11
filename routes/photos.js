@@ -47,6 +47,8 @@ router.get('/:image', auth, async(req, res) => {
 router.post('/', auth, async(req, res) => {
     try {
         const images = req.body.files;
+console.log(req.body);
+
     console.log(images); // Empty object
         let unPredicted = [];
 
