@@ -1,16 +1,29 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const auth = require('../middleware/auth');
-const {upload} = require('../services/uploadPhotoService');
+const {uploadPhotos} = require('../services/uploadPhotoService');
 const download = require('../services/downloadPhotoService');
+const predict = require('../services/predictService');
 const {validateImage} = require('image-validator');
 const { Storage } = require('@google-cloud/storage');
 const { Photo } = require('../model/Photo');
-const { generateSignedUrl } = require('../services/signedUrlService');
+// const { generateSignedUrl } = require('../services/signedUrlService');
 const config = require('config');
 const project = config.get('GCP_PROJECT_ID');
 const apiKey = config.get('GCP_APPLICATION_CREDENTIALS');
 const bucketName = config.get('GCP_BUCKET_NAME')
+
+const upload = multer({
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Kun .png, .jpg and .jpeg format er tilladt!'));
+        }
+    }, 
+});
 
 const gc = new Storage({
     keyFilename: apiKey,
@@ -44,29 +57,35 @@ router.get('/:image', auth, async(req, res) => {
         res.send(await download(imageName));
 });
 
-router.post('/', auth, async(req, res) => {
+router.post('/', upload.array('files', 50), async(req, res) => {
     try {
-        const images = req.body.files;
-console.log(req.body);
+        const images = req.files;
 
-    console.log(images); // Empty object
+        if(!images) 
+            return res.status(400).send("Please upload files");
+        
         let unPredicted = [];
 
         for( let image of images) {
-console.log(image);            
-            await upload(image);
+            const url = await uploadPhotos(image);
+            const { originalname } = image;
+            const prediction = await predict(originalname);
 
-            const prediction = await predict(blobStream.publicUrl);
-            console.log(prediction);        
             if(!prediction)
-                unPredicted.push(fileName);
+                unPredicted.push(originalname);
             else {
+
+                let labels = [];
+                prediction.Predictions.map(label => {
+                    labels.push(label.label);
+                })
+
                 let photo = new Photo({
-                    name: image.name,
-                    url: blobStream.publicUrl,
+                    name: originalname,
+                    url: url,
                     photographer: req.body.photographer,
                     photographerId: req.body.photographerId,
-                    labels: prediction
+                    labels: labels
                 });
                 photo.save();
             }

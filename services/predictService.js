@@ -1,12 +1,22 @@
 const config = require('config');
+const { Storage } = require('@google-cloud/storage');
 const aiplatform = require('@google-cloud/aiplatform');
 const endpointId = config.get("GCP_ENDPOINT_ID");
 const project = config.get('GCP_PROJECT_ID');
 const location = config.get('GCP_LOCATION');
+const bucketName = config.get('GCP_BUCKET_NAME')
+const apiKey = config.get('GCP_APPLICATION_CREDENTIALS');
+const { Base64Encode} = require('base64-stream');
+const concat = require('concat-stream');
+
+const gc = new Storage({
+  keyFilename: apiKey,
+  projectId: project
+})
 
 module.exports = async function (filename) {
     // [START aiplatform_predict_image_classification_sample]
-  
+
     const {instance, params, prediction} =
       aiplatform.protos.google.cloud.aiplatform.v1.schema.predict;
   
@@ -15,15 +25,29 @@ module.exports = async function (filename) {
   
     // Specifies the location of the api endpoint
     const clientOptions = {
-      apiEndpoint: 'us-central1-aiplatform.googleapis.com',
+      apiEndpoint: `${location}-aiplatform.googleapis.com`,
     };
   
     // Instantiates a client
     const predictionServiceClient = new PredictionServiceClient(clientOptions);
-  
+
+    async function streamToBase64(stream) {
+      return new Promise((resolve, reject) => {
+        const cbConcat = (base64) => {
+          resolve(base64);
+        };
+    
+      stream
+        .pipe(new Base64Encode())
+        .pipe(concat(cbConcat))
+        .on('error', (error) => {
+          reject(error);
+        });
+      });
+    }
+
     async function predictImageClassification() {
       // Configure the endpoint resource
-      console.log("Endpoint = " + `projects/${project}/locations/${location}/endpoints/${endpointId}`);
       const endpoint = `projects/${project}/locations/${location}/endpoints/${endpointId}`;
   
       const parametersObj = new params.ImageClassificationPredictionParams({
@@ -31,50 +55,46 @@ module.exports = async function (filename) {
         maxPredictions: 5,
       });
       const parameters = parametersObj.toValue();
-  
-      const image = await fetch(filename)
-        .then((response) => response.blob())
-        .then(imageBlob => {
-          console.log("ImageBlob" + filename);
-          return URL.createObjectURL(imageBlob);
-        });
+
+      const img = gc.bucket(bucketName).file(filename).createReadStream();
+      
+      const img64 = await streamToBase64(img);
+
       const instanceObj = new instance.ImageClassificationPredictionInstance({
-        content: image,
+        content: img64,
       });
       const instanceValue = instanceObj.toValue();
-  
+      
       const instances = [instanceValue];
       const request = {
         endpoint,
         instances,
         parameters,
       };
-  
-      console.log("Request : " + request.endpoint + ", " + request.instances + ", " + request.parameters);
+
       // Predict requset
       const [response] = await predictionServiceClient.predict(request);
-    console.log("predict");
+
       const predictions = response.predictions;
 
-      console("Predictions : " + predictions);
-      let forudsigelser = [];
+      let labels = [];
 
       for (const predictionValue of predictions) {
         const predictionResultObj =
           prediction.ClassificationPredictionResult.fromValue(predictionValue);
         for (const [i, label] of predictionResultObj.displayNames.entries()) {
-            forudsigelser.push({
+            labels.push({
                 "label" : label,
                 "confidence" : predictionResultObj.confidences[i],
                 "ISs" : predictionResultObj.ids[i]
-            })
+            });
         }
       }
 
       let resultat = {
         "Billede" : filename,
         "Model_ID" : response.deployedModelId,
-        "Predictions" : forudsigelser
+        "Predictions" : labels
       };
       return resultat;
     }

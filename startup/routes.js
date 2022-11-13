@@ -3,6 +3,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const cors = require("cors");
 const multer = require('multer');
+const bodyParser = require('body-parser');
 const users = require('../routes/users');
 const auth = require('../routes/auth');
 const predict = require('../routes/predict');
@@ -22,7 +23,9 @@ module.exports = function(app) {
     app.use(helmet());
     app.use(compression());
     app.use(cors(corsOptions));
-    app.use(multerMid.single('file'));
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended:false}));
+    // app.use(multerMid.single('file'));
     app.use(express.json());
     app.use('/api/users', users);
     app.use('/api/login', auth);

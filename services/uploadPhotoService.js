@@ -9,18 +9,19 @@ const gc = new Storage({
     projectId: project
 })
 
-const upload  = (file) => new Promise((resolve, reject) => {
-console.log(file);
-    const { name, buffer}= file;
-console.log("name: " + name);
-    const blob = gc.bucket(bucketName).file(name.replace(/ /g, "_"));
+const uploadPhotos  = (file) => new Promise((resolve, reject) => {
+
+// TODO: check if filename allready exist
+
+    const { originalname, buffer}= file;
+    const blob = gc.bucket(bucketName).file(originalname.replace(/ /g, "_"));
     const blobStream = blob.createWriteStream({resumable: false});
     blobStream.on('finish', () => {
-        const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+        const publicUrl = `https://storage.cloud.google.com/${bucketName}/${blob.name}`;
         resolve(publicUrl);
     }).on('error', () => {
         reject(`Kunne ikke uploade billede`)
     }).end(buffer);
 });
 
-module.exports.upload = upload;
+module.exports.uploadPhotos = uploadPhotos;

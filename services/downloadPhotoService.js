@@ -7,7 +7,7 @@ const bucketName = config.get('GCP_BUCKET_NAME')
 const gc = new Storage({
     keyFilename: apiKey,
     projectId: project
-})
+});
 
 module.exports = async function downloadFile(fileName) {
     const options = {

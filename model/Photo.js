@@ -17,7 +17,7 @@ const photoSchema = mongoose.Schema({
     photographer: {
         type: String,
         required: true,
-        minLength: 5,
+        minLength: 2,
         maxLength: 255
     },
     photographerId: {
