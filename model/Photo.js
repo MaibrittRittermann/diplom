@@ -7,13 +7,6 @@ const photoSchema = mongoose.Schema({
         minLength: 5,
         maxLength: 255
     },
-    url: {
-        type: String,
-        required: true,
-        minLength: 5,
-        maxLength: 255,
-        unique: true
-    },
     photographer: {
         type: String,
         required: true,
@@ -24,9 +17,20 @@ const photoSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
+    url: {
+        type: String
+    },
+    date: {
+        type: Date,
+        required: true
+    },
     labels: {
         type: [String]
     },
+    untrained: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const Photo = mongoose.model('Photos', photoSchema);

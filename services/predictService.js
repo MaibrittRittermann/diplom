@@ -1,13 +1,13 @@
 const config = require('config');
 const { Storage } = require('@google-cloud/storage');
+const { Base64Encode} = require('base64-stream');
+const concat = require('concat-stream');
 const aiplatform = require('@google-cloud/aiplatform');
 const endpointId = config.get("GCP_ENDPOINT_ID");
 const project = config.get('GCP_PROJECT_ID');
 const location = config.get('GCP_LOCATION');
 const bucketName = config.get('GCP_BUCKET_NAME')
 const apiKey = config.get('GCP_APPLICATION_CREDENTIALS');
-const { Base64Encode} = require('base64-stream');
-const concat = require('concat-stream');
 
 const gc = new Storage({
   keyFilename: apiKey,
@@ -83,20 +83,25 @@ module.exports = async function (filename) {
         const predictionResultObj =
           prediction.ClassificationPredictionResult.fromValue(predictionValue);
         for (const [i, label] of predictionResultObj.displayNames.entries()) {
+          if(predictionResultObj.confidences[i] > 0.98)
             labels.push({
                 "label" : label,
                 "confidence" : predictionResultObj.confidences[i],
-                "ISs" : predictionResultObj.ids[i]
+                "IDs" : predictionResultObj.ids[i]
             });
         }
       }
 
-      let resultat = {
-        "Billede" : filename,
-        "Model_ID" : response.deployedModelId,
-        "Predictions" : labels
-      };
-      return resultat;
+      if (labels.length > 0) {
+
+        let resultat = {
+          "Billede" : filename,
+          "Model_ID" : response.deployedModelId,
+          "Predictions" : labels
+        };
+        return resultat;
+      } else 
+        return null;
     }
     return await predictImageClassification();
     // [END aiplatform_predict_image_classification_sample]

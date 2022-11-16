@@ -1,13 +1,8 @@
 const config = require('config');
 const aiplatform = require('@google-cloud/aiplatform');
+const datasetService = require('./datasetService');
 const project = config.get('GCP_PROJECT_ID');
 const location = config.get('GCP_LOCATION');
-
-// TODO: set real values
-const datasetId = 'YOUR DATASET';
-const modelDisplayName = 'NEW MODEL NAME';
-const trainingPipelineDisplayName = 'NAME FOR TRAINING PIPELINE';
-
 
 const {definition} =
   aiplatform.protos.google.cloud.aiplatform.v1.schema.trainingjob;
@@ -23,9 +18,18 @@ const clientOptions = {
 const {PipelineServiceClient} = aiplatform.v1;
 const pipelineServiceClient = new PipelineServiceClient(clientOptions);
 
-module.exports = async function createTrainingPipelineImageClassification() {
+module.exports = async function createTrainingPipelineImageClassification(label, photos) {
   // Configure the parent resource
   const parent = `projects/${project}/locations/${location}`;
+
+
+
+// TODO: set real values
+// const datasetId = 'YOUR DATASET';
+const dataset = await datasetService(label, photos);
+
+const modelDisplayName = `projekt-pressebilleder1`;
+const trainingPipelineDisplayName = `trainPipeDiplom${label}`;
 
   // Values should match the input expected by your model.
   const trainingTaskInputsMessage =
@@ -42,7 +46,10 @@ module.exports = async function createTrainingPipelineImageClassification() {
     'gs://google-cloud-aiplatform/schema/trainingjob/definition/automl_image_classification_1.0.0.yaml';
 
   const modelToUpload = {displayName: modelDisplayName};
-  const inputDataConfig = {datasetId};
+
+
+
+  const inputDataConfig = {dataset};
   const trainingPipeline = {
     displayName: trainingPipelineDisplayName,
     trainingTaskDefinition,
@@ -52,13 +59,13 @@ module.exports = async function createTrainingPipelineImageClassification() {
   };
   const request = {parent, trainingPipeline};
 
-  // Create training pipeline request
-  const [response] = await pipelineServiceClient.createTrainingPipeline(
-    request
-  );
+  // // Create training pipeline request
+  // const [response] = await pipelineServiceClient.createTrainingPipeline(
+  //   request
+  // );
 
-  console.log('Create training pipeline image classification response');
-  console.log(`Name : ${response.name}`);
-  console.log('Raw response:');
-  console.log(JSON.stringify(response, null, 2));
+  // console.log('Create training pipeline image classification response');
+  // console.log(`Name : ${response.name}`);
+  // console.log('Raw response:');
+  // console.log(JSON.stringify(response, null, 2));
 }
