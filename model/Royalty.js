@@ -11,15 +11,21 @@ const royaltySchema = mongoose.Schema({
         type: Number,
         required: true,
     },
-    usage: {
+    userId: {
+        type: Number,
+        required: true
+    },
+    channel: {
         type: String,
         required: true,
         minLength: 5,
         maxLength: 255
     },
     mediaType: {
-        type: Number,
-        required: true
+        type: String,
+        required: true,
+        minLength: 2,
+        maxLength: 255
     },
     useDate: {
         type: Date,

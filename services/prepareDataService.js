@@ -15,7 +15,7 @@ module.exports = async function prepareData(label, photos) {
 
     let prepareDataSet = '';
     photos.map( p => {
-      prepareDataSet += `{"imageGcsUri": "${p}",  "classificationAnnotation": {"displayName": "${label}"}, "dataItemResourceLabels": {"aiplatform.googleapis.com/ml_use": "training"}}\n`;
+      prepareDataSet += `{"imageGcsUri": "${p.url}",  "classificationAnnotation": {"displayName": "${label}"}, "dataItemResourceLabels": {"aiplatform.googleapis.com/ml_use": "training"}}\n`;
     });
     
     const fileName = `train-${label}.jsonl`;

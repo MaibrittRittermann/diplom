@@ -14,5 +14,5 @@ module.exports = async function downloadFile(fileName) {
         destination:  process.env.USERPROFILE + "/Downloads/" + fileName 
     };
 
-    await gc.bucket(bucketName).file(fileName).download(options);
+    await gc.bucket(bucketName).file(fileName).createReadStream().pipe();
 }

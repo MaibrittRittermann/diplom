@@ -47,9 +47,9 @@ const trainingPipelineDisplayName = `trainPipeDiplom${label}`;
 
   const modelToUpload = {displayName: modelDisplayName};
 
+  const datasetId = dataset.name;
 
-
-  const inputDataConfig = {dataset};
+  const inputDataConfig = {datasetId};
   const trainingPipeline = {
     displayName: trainingPipelineDisplayName,
     trainingTaskDefinition,

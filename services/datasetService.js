@@ -39,9 +39,7 @@ console.log("gcsScource : " + gcsSourceUri);
     
     await response.promise();
     const result = response.result;
-    // datasetServiceClient.createDataset(request).then(( res ) => {
-
-    //   const name = res.name;
+    
       const importConfigs = [
         {
           gcsSource: {uris: [gcsSourceUri]},
@@ -73,7 +71,7 @@ console.log(result);
       );
     // });
 
-    return result;
+    return importDataResponse;
 
     // Create Dataset Request
     // const [response] = await datasetServiceClient.createDataset(request);

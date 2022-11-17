@@ -9,6 +9,7 @@ const createTrainingPipelineImageClassification = require('../services/trainMode
 const {validateImage} = require('image-validator');
 const { Storage } = require('@google-cloud/storage');
 const { Photo } = require('../model/Photo');
+const { Royalty } = require('../model/Royalty');
 // const { generateSignedUrl } = require('../services/signedUrlService');
 const config = require('config');
 const project = config.get('GCP_PROJECT_ID');
@@ -104,11 +105,12 @@ router.post('/', [upload.array('files', 50), auth], async(req, res) => {
     }
 });
 
+// TODO: validatedata
 router.post('/train', [upload.array(), auth], async(req, res) => { 
     try {
         const photoName = req.body.photo;
         const labels = (req.body.labels.split(',')).map(s => s.trim());
-console.log(labels);
+
         if(!photoName || !labels) 
             return res.status(400).send("Udfyld søgeord for foto!");
 
@@ -143,6 +145,36 @@ console.log(labels);
             labeled: true
         });
     }catch(ex) {
+        console.log(ex);
+    }
+});
+
+// TODO: validatedata
+router.post('/download', [upload.array(), auth], async(req, res) => {
+
+    const file = req.body.photo;
+    try {
+
+        const royalty = new Royalty({ 
+            photo: file,
+            photographerId: req.body.photographerId,
+            userId: req.body.userId,
+            channel: req.body.channel,
+            mediaType: req.body.mediaType,
+            useDate: req.body.date
+        });
+
+        await royalty.save();
+
+        let contetType = `image/${file.split('.').pop()}`;
+        res.writeHead(200, {
+            'Content-Disposition': `attachment;filename=${file}`,
+            'Content-Type': `${contetType}`
+        });
+
+        await gc.bucket(bucketName).file(file).createReadStream().pipe(res);
+
+    } catch (ex) {
         console.log(ex);
     }
 });
