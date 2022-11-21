@@ -3,19 +3,18 @@ const router = express.Router();
 const multer = require('multer');
 const auth = require('../middleware/auth');
 const {uploadPhotos} = require('../services/uploadPhotoService');
-const download = require('../services/downloadPhotoService');
 const predict = require('../services/predictService');
-const createTrainingPipelineImageClassification = require('../services/trainModelService');
-const {validateImage} = require('image-validator');
 const { Storage } = require('@google-cloud/storage');
 const { Photo } = require('../model/Photo');
 const { Royalty } = require('../model/Royalty');
-// const { generateSignedUrl } = require('../services/signedUrlService');
+const { generateSignedUrl } = require('../services/signedUrlService');
 const config = require('config');
 const project = config.get('GCP_PROJECT_ID');
 const apiKey = config.get('GCP_APPLICATION_CREDENTIALS');
-const bucketName = config.get('GCP_BUCKET_NAME')
+const bucketName = config.get('GCP_BUCKET_NAME');
+const publicPath = config.get('GCP_PUBLIC_PATH');
 
+/** Begræns upload af filer til kun billeder af typerne jpg og png */
 const upload = multer({
     fileFilter: (req, file, cb) => {
         if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
@@ -32,127 +31,96 @@ const gc = new Storage({
     projectId: project
 })
 
-router.get('/', auth,  async(req, res) => {  
-    gc.bucket(bucketName).getFiles().then(([files])=>{
-        let fileNames = [];
-        files.forEach(file => {
-            fileNames.push({file: file.name, url: file.metadata.mediaLink});
+/** Return Photo stream */
+router.get('/:photo', auth,  async(req, res) => {  
+    try {
+        const file = req.params.photo;
+        let contetType = `image/${file.split('.').pop()}`;
+        
+        res.writeHead(200, {
+            'Content-Type': `${contetType}`,
+            'Content-Disposition': `attachment;filename=${file}`
         });
-        res.send(fileNames);
-    }).catch((err) => console.log(err));
+        const filestream = gc.bucket(bucketName).file(file).createReadStream();
+        filestream.pipe(res);
+
+    } catch (ex) {
+        console.log(ex);
+    }
 });
 
+/** Get by Searchterm */
 router.get('/label/:label', auth, async(req, res) => {
-    const selection = await Photo.find({labels:   { $regex : new RegExp(req.params.label, "i") }});
-// TODO: Get Signed URL or stream images instead
-
-    // const urls = [];
-    // selection.forEach(async (file) => {
-    //     urls.push(await generateSignedUrl(file.name));
-    // })
+    const keyword = req.params.label.replace(/[^a-zA-Z_0-9-]/g,'');
+    const selection = await Photo.find({labels:   { $regex : new RegExp(keyword, "i") }});
     res.send(selection);
 });
 
-router.get('/:image', auth, async(req, res) => {    
-    const imageName = req.params.image;
-    if(validateImage(imageName))
-        res.send(await download(imageName));
-});
-
+/** Upload photos */
 router.post('/', [upload.array('files', 50), auth], async(req, res) => {
     try {
         const images = req.files;
 
         if(!images) 
-            return res.status(400).send("Please upload files");
+            return res.status(400).send("Der skal vedhæftes billedet før upload");
         
         let predicted = [];
         let unPredicted = [];
+        let existing = [];
 
-        for( let image of images) {
-            const url = await uploadPhotos(image);
+        for( let image of images) {  
+            let url = '';
             const { originalname } = image;
-            const prediction = await predict(originalname);
 
-            if(!prediction)
-                unPredicted.push({name: originalname, url: url});
-            else {
-
-                let labels = [];
-                prediction.Predictions.map(label => {
-                    labels.push(label.label);
-                })
-
-                let photo = new Photo({
-                    name: originalname,
-                    photographer: req.body.photographer,
-                    photographerId: req.body.photographerId,
-                    url: url,
-                    date: new Date(),
-                    labels: labels
-                });
-                photo.save();
-                predicted.push({name: originalname, predicts: labels, url: url});
+            try {
+                url = await uploadPhotos(image);
+            } catch (ex) {
+                existing.push(image.originalname);
+                continue;
+            }
+            
+            try {
+                const prediction = await predict(originalname);
+                if(!prediction) {
+                    unPredicted.push({name: originalname, url: url});
+                } else {
+                    let labels = [];
+                    prediction.Predictions.map(label => {
+                        labels.push(label.label);
+                    })
+                    
+                    let photo = new Photo({
+                        name: originalname,
+                        photographer: req.body.photographer,
+                        photographerId: req.body.photographerId,
+                        url: url,
+                        date: new Date(),
+                        labels: labels
+                    });
+                    photo.save();
+                    predicted.push({name: originalname, predicts: labels, url: url});
+                }          
+            } catch (ex) {
+                console.log(ex);
             }
         }
-
         res.json({
             predicted: predicted,
-            unPredicted: unPredicted
+            unPredicted: unPredicted,
+            existing: existing
         });
     }catch(ex) {
         console.log(ex);
+        res.status(400).send(ex);
     }
 });
 
-// TODO: validatedata
-router.post('/train', [upload.array(), auth], async(req, res) => { 
-    try {
-        const photoName = req.body.photo;
-        const labels = (req.body.labels.split(',')).map(s => s.trim());
-
-        if(!photoName || !labels) 
-            return res.status(400).send("Udfyld søgeord for foto!");
-
-        const exist = await Photo.findOne({name: { $regex : new RegExp(photoName, "i") }});
-        if(exist)
-            return res.status(400).send("Billedet er allerede registreret i databasen");
-        
-        const url = `https://storage.cloud.google.com/${bucketName}/${photoName}`;    
-
-        let photo = new Photo({
-            name: photoName,
-            photographer: req.body.photographer,
-            photographerId: req.body.photographerId,
-            url: url,
-            date: new Date(),
-            labels: labels,
-            untrained: true
-        });
-        photo.save();
-            
-        labels.map(async(label) => {
-            const selection = await Photo.find({labels:   { $regex : new RegExp(label, "i") }, untrained: true});
-
-            if(selection.length > 15) {
-                console.log("Train model with " + label);
-                createTrainingPipelineImageClassification(label, selection);
-            }
-        });
-
-        res.json({
-            photo: photoName,
-            labeled: true
-        });
-    }catch(ex) {
-        console.log(ex);
-    }
-});
-
-// TODO: validatedata
+/** Download Photo and provide royalty */
+// TODO: validatedata and split function royalty to separate function
 router.post('/download', [upload.array(), auth], async(req, res) => {
 
     const file = req.body.photo;
+
     try {
 
         const royalty = new Royalty({ 
@@ -167,15 +135,18 @@ router.post('/download', [upload.array(), auth], async(req, res) => {
         await royalty.save();
 
         let contetType = `image/${file.split('.').pop()}`;
+        
         res.writeHead(200, {
-            'Content-Disposition': `attachment;filename=${file}`,
-            'Content-Type': `${contetType}`
+            'Content-Type': `${contetType}`,
+            'Content-Disposition': `attachment;filename=${file}`
         });
 
-        await gc.bucket(bucketName).file(file).createReadStream().pipe(res);
+        const filestream = gc.bucket(bucketName).file(file).createReadStream();
+        filestream.pipe(res);
 
     } catch (ex) {
         console.log(ex);
+        res.status(400).send(ex);
     }
 });
 

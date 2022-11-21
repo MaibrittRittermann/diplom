@@ -9,14 +9,15 @@ const gc = new Storage({
     projectId: project
 })
 
-async function generateSignedUrl(fileName) {
+  async function generateSignedUrl(fileName) {
+
     // These options will allow temporary read access to the file
     const options = {
       version: 'v4', // defaults to 'v2' if missing.
       action: 'read',
       expires: Date.now() + 1000 * 60 * 60, // one hour
-      
     };
+    
 console.log("Sign url for " + fileName);
     // Get a v4 signed URL for the file
     try {
@@ -26,7 +27,7 @@ console.log("Sign url for " + fileName);
       .file(fileName)
       .getSignedUrl(options);
       
-      console.log(`The signed url for ${fileName} is ${url}.`);
+console.log(`The signed url for ${fileName} is ${url}.`);
       
       return url;
     } catch(ex) {

@@ -15,7 +15,7 @@ module.exports = async function prepareData(label, photos) {
 
     let prepareDataSet = '';
     photos.map( p => {
-      prepareDataSet += `{"imageGcsUri": "${p.url}",  "classificationAnnotation": {"displayName": "${label}"}, "dataItemResourceLabels": {"aiplatform.googleapis.com/ml_use": "training"}}\n`;
+      prepareDataSet += `{"imageGcsUri": "gs://${bucketName}/${p.name}",  "classificationAnnotation": {"displayName": "${label}"}, "dataItemResourceLabels": {"aiplatform.googleapis.com/ml_use": "training"}}\n`;
     });
     
     const fileName = `train-${label}.jsonl`;
@@ -27,5 +27,6 @@ console.log(prepareDataSet);
 
     file.save(prepareDataSet);
 
-    return `${publicPath}${bucketName}/${fileName}`;
+    // return `${publicPath}${bucketName}/${fileName}`;
+    return `gs://${bucketName}/${fileName}`;
 } 

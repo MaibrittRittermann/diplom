@@ -8,6 +8,7 @@ const users = require('../routes/users');
 const auth = require('../routes/auth');
 const predict = require('../routes/predict');
 const photos = require('../routes/photos');
+const train = require('../routes/train');
 
 const multerMid = multer({
     storage: multer.memoryStorage(),
@@ -30,6 +31,7 @@ module.exports = function(app) {
     app.use('/api/login', auth);
     app.use('/api/predict', predict);
     app.use('/api/photos', photos);
+    app.use('/api/train', train);
 
     app.use(function(err, req, res, next) {
         console.log(err.message, err);

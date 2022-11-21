@@ -27,6 +27,8 @@ module.exports = async function createTrainingPipelineImageClassification(label,
 // TODO: set real values
 // const datasetId = 'YOUR DATASET';
 const dataset = await datasetService(label, photos);
+console.log("Training dataset created:");
+console.log(dataset);
 
 const modelDisplayName = `projekt-pressebilleder1`;
 const trainingPipelineDisplayName = `trainPipeDiplom${label}`;
@@ -47,7 +49,9 @@ const trainingPipelineDisplayName = `trainPipeDiplom${label}`;
 
   const modelToUpload = {displayName: modelDisplayName};
 
-  const datasetId = dataset.name;
+  const datasetId = dataset.name.split("/").pop();;
+
+console.log("datasetID: " + datasetId);
 
   const inputDataConfig = {datasetId};
   const trainingPipeline = {
@@ -58,14 +62,14 @@ const trainingPipelineDisplayName = `trainPipeDiplom${label}`;
     modelToUpload,
   };
   const request = {parent, trainingPipeline};
+console.log("Create training pipeline");
+  // Create training pipeline request
+  const [response] = await pipelineServiceClient.createTrainingPipeline(
+    request
+  );
 
-  // // Create training pipeline request
-  // const [response] = await pipelineServiceClient.createTrainingPipeline(
-  //   request
-  // );
-
-  // console.log('Create training pipeline image classification response');
-  // console.log(`Name : ${response.name}`);
-  // console.log('Raw response:');
-  // console.log(JSON.stringify(response, null, 2));
+  console.log('Create training pipeline image classification response');
+  console.log(`Name : ${response.name}`);
+  console.log('Raw response:');
+  console.log(JSON.stringify(response, null, 2));
 }

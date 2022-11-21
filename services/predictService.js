@@ -1,7 +1,6 @@
 const config = require('config');
 const { Storage } = require('@google-cloud/storage');
-const { Base64Encode} = require('base64-stream');
-const concat = require('concat-stream');
+const {streamToBase64} = require('../util/toBase64Stream');
 const aiplatform = require('@google-cloud/aiplatform');
 const endpointId = config.get("GCP_ENDPOINT_ID");
 const project = config.get('GCP_PROJECT_ID');
@@ -31,21 +30,6 @@ module.exports = async function (filename) {
     // Instantiates a client
     const predictionServiceClient = new PredictionServiceClient(clientOptions);
 
-    async function streamToBase64(stream) {
-      return new Promise((resolve, reject) => {
-        const cbConcat = (base64) => {
-          resolve(base64);
-        };
-    
-      stream
-        .pipe(new Base64Encode())
-        .pipe(concat(cbConcat))
-        .on('error', (error) => {
-          reject(error);
-        });
-      });
-    }
-
     async function predictImageClassification() {
       // Configure the endpoint resource
       const endpoint = `projects/${project}/locations/${location}/endpoints/${endpointId}`;
@@ -56,9 +40,11 @@ module.exports = async function (filename) {
       });
       const parameters = parametersObj.toValue();
 
-      const img = gc.bucket(bucketName).file(filename).createReadStream();
-      
-      const img64 = await streamToBase64(img);
+      // const img = gc.bucket(bucketName).file(filename).createReadStream();
+
+      // const img64 = await streamToBase64(img);
+
+      const img64 = await streamToBase64(gc.bucket(bucketName).file(filename).createReadStream());
 
       const instanceObj = new instance.ImageClassificationPredictionInstance({
         content: img64,
@@ -83,6 +69,10 @@ module.exports = async function (filename) {
         const predictionResultObj =
           prediction.ClassificationPredictionResult.fromValue(predictionValue);
         for (const [i, label] of predictionResultObj.displayNames.entries()) {
+
+console.log(predictionResultObj.confidences[i] + " on " + label);
+
+          // Make sure to only accept high confidence predictions
           if(predictionResultObj.confidences[i] > 0.98)
             labels.push({
                 "label" : label,

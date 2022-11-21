@@ -4,7 +4,6 @@ const {DatasetServiceClient} = require('@google-cloud/aiplatform');
 const prepareDataSet = require('./prepareDataService');
 const project = config.get('GCP_PROJECT_ID');
 const location = config.get('GCP_LOCATION');
-// const datasetId = config.get('GCP_DATASET_ID');
 
 const clientOptions = {
     apiEndpoint: `${location}-aiplatform.googleapis.com`,
@@ -15,7 +14,7 @@ const datasetServiceClient = new DatasetServiceClient(clientOptions);
 module.exports = async function (label, photos) {
 
   const gcsSourceUri = await prepareDataSet(label, photos);
-console.log("gcsScource : " + gcsSourceUri);
+console.log("gcsScourceUri : " + gcsSourceUri);
 
     // Configure the parent resource
     const parent = `projects/${project}/locations/${location}`;
@@ -54,9 +53,14 @@ console.log("gcsScource : " + gcsSourceUri);
         name,
         importConfigs,
       };
-console.log(result);
+console.log(requestImport);
     
-
+    console.log('Create dataset image response');
+    console.log(`Name : ${result.name}`);
+    console.log(`Display name : ${result.displayName}`);
+    console.log(`Metadata schema uri : ${result.metadataSchemaUri}`);
+    console.log(`Metadata : ${JSON.stringify(result.metadata)}`);
+    console.log(`Labels : ${JSON.stringify(result.labels)}`);
            
       // // Create Import Data Request
       [response] = await datasetServiceClient.importData(requestImport);
@@ -69,27 +73,8 @@ console.log(result);
         `Import data image classification response : \
           ${JSON.stringify(importDataResponse)}`
       );
-    // });
 
-    return importDataResponse;
-
-    // Create Dataset Request
-    // const [response] = await datasetServiceClient.createDataset(request);
-    // console.log(`Long running operation: ${response.name}`);
-
-    // Wait for operation to complete
-    
-    // await response.promise();
-    // const result = response.result;
-
-    // // TODO: importData(request, options)
-
-    // console.log('Create dataset image response');
-    // console.log(`Name : ${result.name}`);
-    // console.log(`Display name : ${result.displayName}`);
-    // console.log(`Metadata schema uri : ${result.metadataSchemaUri}`);
-    // console.log(`Metadata : ${JSON.stringify(result.metadata)}`);
-    // console.log(`Labels : ${JSON.stringify(result.labels)}`);
+    return result;
   }
 
  
