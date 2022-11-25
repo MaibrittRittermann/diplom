@@ -14,8 +14,13 @@ const gc = new Storage({
 module.exports = async function prepareData(label, photos) {
 
     let prepareDataSet = '';
-    photos.map( p => {
-      prepareDataSet += `{"imageGcsUri": "gs://${bucketName}/${p.name}",  "classificationAnnotation": {"displayName": "${label}"}, "dataItemResourceLabels": {"aiplatform.googleapis.com/ml_use": "training"}}\n`;
+    photos.map( (p, i) => {
+        if( i % 6 === 0 )
+            prepareDataSet += `{"imageGcsUri": "gs://${bucketName}/${p.name}",  "classificationAnnotation": {"displayName": "${label}"}, "dataItemResourceLabels": {"aiplatform.googleapis.com/ml_use": "validation"}}\n`;
+        if( i === 17 )
+            prepareDataSet += `{"imageGcsUri": "gs://${bucketName}/${p.name}",  "classificationAnnotation": {"displayName": "${label}"}, "dataItemResourceLabels": {"aiplatform.googleapis.com/ml_use": "test"}}\n`;
+        else
+            prepareDataSet += `{"imageGcsUri": "gs://${bucketName}/${p.name}",  "classificationAnnotation": {"displayName": "${label}"}, "dataItemResourceLabels": {"aiplatform.googleapis.com/ml_use": "training"}}\n`;
     });
     
     const fileName = `train-${label}.jsonl`;

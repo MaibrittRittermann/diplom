@@ -25,7 +25,6 @@ module.exports = function(app) {
     app.use(cors(corsOptions));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended:false}));
-    // app.use(multerMid.single('file'));
     app.use(express.json());
     app.use('/api/users', users);
     app.use('/api/login', auth);
@@ -35,7 +34,7 @@ module.exports = function(app) {
 
     app.use(function(err, req, res, next) {
         console.log(err.message, err);
-        res.status(500).send('Something failed');
+        res.status(500).send('Something failed:' + err.message);
     });
 }
 

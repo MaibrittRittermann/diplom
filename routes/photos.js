@@ -57,6 +57,7 @@ router.get('/label/:label', auth, async(req, res) => {
 });
 
 /** Upload photos */
+// TODO: validate photos
 router.post('/', [upload.array('files', 50), auth], async(req, res) => {
     try {
         const images = req.files;

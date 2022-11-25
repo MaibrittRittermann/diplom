@@ -6,7 +6,6 @@ const admin = require('../middleware/admin');
 const validateObjectId = require('../middleware/validateObjectId');
 const { validate, User } = require('../model/User');
 
-
 router.get('/', [auth, admin], async(req, res) => {
     res.send(await User.find().sort('name'));
 });

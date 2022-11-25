@@ -1,5 +1,4 @@
 const config = require('config');
-const aiplatform = require('@google-cloud/aiplatform');
 const {DatasetServiceClient} = require('@google-cloud/aiplatform');
 const prepareDataSet = require('./prepareDataService');
 const project = config.get('GCP_PROJECT_ID');
@@ -7,13 +6,14 @@ const location = config.get('GCP_LOCATION');
 
 const clientOptions = {
     apiEndpoint: `${location}-aiplatform.googleapis.com`,
-  };
+};
 
 const datasetServiceClient = new DatasetServiceClient(clientOptions);
 
 module.exports = async function (label, photos) {
 
-  const gcsSourceUri = await prepareDataSet(label, photos);
+    const gcsSourceUri = await prepareDataSet(label, photos);
+
 console.log("gcsScourceUri : " + gcsSourceUri);
 
     // Configure the parent resource
@@ -21,10 +21,10 @@ console.log("gcsScourceUri : " + gcsSourceUri);
 
     // Configure the dataset resource
     const dataset = {
-      displayName: 'train',
-      metadataSchemaUri:
-        'gs://google-cloud-aiplatform/schema/dataset/metadata/image_1.0.0.yaml',
+        displayName: 'train',
+        metadataSchemaUri: 'gs://google-cloud-aiplatform/schema/dataset/metadata/image_1.0.0.yaml',
     };
+
     const request = {
       parent,
       dataset,
@@ -39,13 +39,11 @@ console.log("gcsScourceUri : " + gcsSourceUri);
     await response.promise();
     const result = response.result;
     
-      const importConfigs = [
-        {
+    const importConfigs = [{
           gcsSource: {uris: [gcsSourceUri]},
           importSchemaUri:
           'gs://google-cloud-aiplatform/schema/dataset/ioformat/image_classification_single_label_io_format_1.0.0.yaml',
-        },
-      ];
+      }];
 
       const name = result.name;
 
@@ -53,14 +51,14 @@ console.log("gcsScourceUri : " + gcsSourceUri);
         name,
         importConfigs,
       };
+
 console.log(requestImport);
-    
-    console.log('Create dataset image response');
-    console.log(`Name : ${result.name}`);
-    console.log(`Display name : ${result.displayName}`);
-    console.log(`Metadata schema uri : ${result.metadataSchemaUri}`);
-    console.log(`Metadata : ${JSON.stringify(result.metadata)}`);
-    console.log(`Labels : ${JSON.stringify(result.labels)}`);
+console.log('Create dataset image response');
+console.log(`Name : ${result.name}`);
+console.log(`Display name : ${result.displayName}`);
+console.log(`Metadata schema uri : ${result.metadataSchemaUri}`);
+console.log(`Metadata : ${JSON.stringify(result.metadata)}`);
+console.log(`Labels : ${JSON.stringify(result.labels)}`);
            
       // // Create Import Data Request
       [response] = await datasetServiceClient.importData(requestImport);
@@ -75,6 +73,6 @@ console.log(requestImport);
       );
 
     return result;
-  }
+}
 
  

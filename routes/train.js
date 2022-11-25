@@ -37,10 +37,11 @@ router.post('/', [upload.array(), auth], async(req, res) => {
         labels.map(async(label) => {
             const selection = await Photo.find({labels:   { $regex : new RegExp(label, "i") }, untrained: true});
 
-            if(selection.length > 15) {
-                console.log("Train model with " + label);
+            if(selection.length > 20) {
                 createTrainingPipelineImageClassification(label, selection);
+
                 // Set selection untrained = false;
+                await Photo.updateMany({labels:   { $regex : new RegExp(label, "i") }}, {untrained: false})
             }
         });
 
