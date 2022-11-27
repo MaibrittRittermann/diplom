@@ -25,13 +25,9 @@ module.exports = async function prepareData(label, photos) {
     
     const fileName = `train-${label}.jsonl`;
     
-console.log("PrepareData for : " + fileName);
-console.log(prepareDataSet);
-
     const file = gc.bucket(bucketName).file(fileName);
 
     file.save(prepareDataSet);
 
-    // return `${publicPath}${bucketName}/${fileName}`;
     return `gs://${bucketName}/${fileName}`;
 } 

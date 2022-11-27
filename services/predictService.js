@@ -40,10 +40,6 @@ module.exports = async function (filename) {
       });
       const parameters = parametersObj.toValue();
 
-      // const img = gc.bucket(bucketName).file(filename).createReadStream();
-
-      // const img64 = await streamToBase64(img);
-
       const img64 = await streamToBase64(gc.bucket(bucketName).file(filename).createReadStream());
 
       const instanceObj = new instance.ImageClassificationPredictionInstance({
@@ -69,8 +65,6 @@ module.exports = async function (filename) {
         const predictionResultObj =
           prediction.ClassificationPredictionResult.fromValue(predictionValue);
         for (const [i, label] of predictionResultObj.displayNames.entries()) {
-
-console.log(predictionResultObj.confidences[i] + " on " + label);
 
           // Make sure to only accept high confidence predictions
           if(predictionResultObj.confidences[i] > 0.98)

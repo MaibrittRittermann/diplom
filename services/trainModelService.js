@@ -21,12 +21,7 @@ module.exports = async function createTrainingPipelineImageClassification(label,
     // Configure the parent resource
     const parent = `projects/${project}/locations/${location}`;
 
-    // TODO: set real values
-    // const datasetId = 'YOUR DATASET';
     const dataset = await datasetService(label, photos);
-
-console.log("Training dataset created:");
-console.log(dataset);
 
     const modelDisplayName = `projekt-pressebilleder1`;
     const trainingPipelineDisplayName = `trainPipeDiplom${label}`;
@@ -48,8 +43,6 @@ console.log(dataset);
 
     const datasetId = dataset.name.split("/").pop();;
 
-console.log("datasetID: " + datasetId);
-
     const inputDataConfig = {datasetId};
     const trainingPipeline = {
         displayName: trainingPipelineDisplayName,
@@ -61,8 +54,6 @@ console.log("datasetID: " + datasetId);
 
     const request = {parent, trainingPipeline};
 
-console.log("Create training pipeline");
-
     // Create training pipeline request
     const [response] = await pipelineServiceClient.createTrainingPipeline(
       request
@@ -72,5 +63,4 @@ console.log('Create training pipeline image classification response');
 console.log(`Name : ${response.name}`);
 console.log('Raw response:');
 console.log(JSON.stringify(response, null, 2));
-
 }
