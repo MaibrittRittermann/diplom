@@ -80,15 +80,19 @@ router.put('/:id', [auth, admin, validateObjectId], async (req, res) => {
 
 router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
 
-    const user = await User.findByIdAndDelete(req.params.id);
-    
-    if(!user) return res.status(404).send('Den angivne bruger eksisterer ikke');
+    const user = findById(req.params.id);
 
+    if(!user) return res.status(404).send('Den angivne bruger eksisterer ikke');
+    
     if(user.isAdmin) {
-        // Todo: implement
-        let admins = await User.countDocuments({isAdmin:true});
-        if (admins > 1) return res.status(404).send("Fejl - kan ikke slette den sidste administrator");
+
+        const token = req.header('x-auth-token');
+        const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
+        if(decoded.email === user.email)
+            return res.status(404).send("Fejl - Du kan ikke slette din egen administrator konto");
     }
+
+    await User.findByIdAndDelete(req.params.id);    
 
     res.send(user);
 });
