@@ -25,8 +25,7 @@ router.get('/email/:email', [auth, admin, validateObjectId], async (req, res) =>
     res.send(user);
 });
 
-// TODO : Add authentication and admin middleware
-router.post('/', async(req, res) => {
+router.post('/', [auth, admin], async(req, res) => {
     const {error} = validate(req.body);
     // file deepcode ignore XSS: Validated through Joi
     if(error) return res.status(400).send(error.details[0].message);

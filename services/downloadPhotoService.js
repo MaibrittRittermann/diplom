@@ -10,9 +10,5 @@ const gc = new Storage({
 });
 
 module.exports = async function downloadFile(fileName) {
-    const options = {
-        destination:  process.env.USERPROFILE + "/Downloads/" + fileName 
-    };
-
     await gc.bucket(bucketName).file(fileName).createReadStream().pipe();
 }

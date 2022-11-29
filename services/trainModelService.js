@@ -59,8 +59,8 @@ module.exports = async function createTrainingPipelineImageClassification(label,
       request
     );
 
-console.log('Create training pipeline image classification response');
-console.log(`Name : ${response.name}`);
-console.log('Raw response:');
-console.log(JSON.stringify(response, null, 2));
+    console.log('Create training pipeline image classification response');
+    console.log(`Name : ${response.name}`);
+    console.log('Raw response:');
+    console.log(JSON.stringify(response, null, 2));
 }

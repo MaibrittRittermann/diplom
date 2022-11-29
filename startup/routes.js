@@ -10,11 +10,6 @@ const predict = require('../routes/predict');
 const photos = require('../routes/photos');
 const train = require('../routes/train');
 
-const multerMid = multer({
-    storage: multer.memoryStorage(),
-    limits: {fileSize: 5*1024*1024}
-});
-
 module.exports = function(app) {
     const corsOptions = {
         exposedHeaders: 'Authorization',
