@@ -14,7 +14,7 @@ const gc = new Storage({
 })
 
 module.exports = async function (filename) {
-    // [START aiplatform_predict_image_classification_sample]
+    // [START aiplatform_predict_image_classification]
 
     const {instance, params, prediction} =
       aiplatform.protos.google.cloud.aiplatform.v1.schema.predict;
@@ -88,7 +88,7 @@ module.exports = async function (filename) {
         return null;
     }
     return await predictImageClassification();
-    // [END aiplatform_predict_image_classification_sample]
+    // [END aiplatform_predict_image_classification]
   }
   
   process.on('unhandledRejection', err => {

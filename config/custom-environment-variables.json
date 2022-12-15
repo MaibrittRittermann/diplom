@@ -1,6 +1,7 @@
 {
     "jwtPrivateKey" : "Diplom_jwtPrivateKey",
     "connectionString" : "connectionString",
+    "MDBcert" : "MDBcert",
     "GCP_APPLICATION_CREDENTIALS" : "GCP_APPLICATION_CREDENTIALS",
     "GCP_ENDPOINT_ID" : "GCP_ENDPOINT_ID",
     "GCP_DATASET_ID" : "GCP_DATASET_ID",

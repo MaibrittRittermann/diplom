@@ -1,5 +1,6 @@
 # MRI
 test.json
+*.pem
 
 # Logs
 logs

@@ -14,25 +14,15 @@ const uploadPhotos  = (file) => new Promise((resolve, reject) => {
 
     const { originalname, buffer}= file;
 
-    // Upload kun nye fotos
-    gc.bucket(bucketName).file(originalname).exists().then(([res]) => {
-
-        if(res)
-            reject(`Der eksisterer allerede et billede med navnet ${originalname}`);
-
-        else {
-            const blob = gc.bucket(bucketName).file(originalname.replace(/ /g, "_"));
-            const blobStream = blob.createWriteStream({resumable: false});
-            blobStream.on('finish', () => {
-                const publicUrl = `${publicPath}${bucketName}/${blob.name}`;
-                resolve(publicUrl);
-            }).on('error', () => {
-                reject(`Kunne ikke uploade billede`)
-            }).end(buffer);
-        }
-    }, (ex) => {     
-        console.log('Not in archive ' + ex);
-    });
+    const blob = gc.bucket(bucketName).file(originalname.replace(/ /g, "_"));
+    const blobStream = blob.createWriteStream({resumable: false});
+    blobStream.on('finish', () => {
+        const publicUrl = `${publicPath}${bucketName}/${blob.name}`;
+        resolve(publicUrl);
+    }).on('error', () => {
+        reject(`Kunne ikke uploade billede`)
+    }).end(buffer);
+    
 });
 
 module.exports.uploadPhotos = uploadPhotos;

@@ -51,7 +51,7 @@ router.get('/:photo', auth,  async(req, res) => {
 
 /** Get by Searchterm */
 router.get('/label/:label', auth, async(req, res) => {
-    const keyword = req.params.label.replace(/[^a-zA-Z_0-9-]/g,'');
+    const keyword = req.params.label.replace(/[^a-zA-Z_0-9- ]/g,'');
     const selection = await Photo.find({labels:   { $regex : new RegExp(keyword, "i") }});
     res.send(selection);
 });
@@ -74,20 +74,21 @@ router.post('/', [upload.array('files', 50), auth], async(req, res) => {
             const { originalname } = image;
 
             try {
-                url = await uploadPhotos(image);
-            } catch (ex) {
-                existing.push(image.originalname);
-                continue;
-            }
-            
-            try {
+                const exists = await Photo.count({name: originalname});
+                if(!exists)
+                    url = await uploadPhotos(image);
+                else {
+                    existing.push(image.originalname);
+                    continue;
+                }
+
                 const prediction = await predict(originalname);
                 if(!prediction) {
                     unPredicted.push({name: originalname, url: url});
                 } else {
                     let labels = [];
-                    prediction.Predictions.map(label => {
-                        labels.push(label.label);
+                    prediction.Predictions.map(p => {
+                        labels.push(p.label);
                     })
                     
                     let photo = new Photo({
@@ -102,7 +103,7 @@ router.post('/', [upload.array('files', 50), auth], async(req, res) => {
                     predicted.push({name: originalname, predicts: labels, url: url});
                 }          
             } catch (ex) {
-                console.log(ex);
+                console.log(`Upload fejl: ${ex}`)
             }
         }
         res.json({

@@ -9,7 +9,6 @@ router.post('/', async(req, res) => {
     const {error} = validate(req.body);
     // file deepcode ignore XSS: Input validated through Joi
     if(error) return res.status(400).send(error.details[0].message);
-
     let user = await User.findOne({email: req.body.email});
     if(!user) return res.status(400).send('Ugyldig email eller adgangskode');
 
